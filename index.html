@@ -27,7 +27,9 @@
   }
   /* Textura de fieltro (fondo estático, sin blend) */
   body {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .75  0 0 0 0 .35  0 0 0 0 .5  0 0 0 .22 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><g fill='none' stroke='rgba(255,243,232,.5)' stroke-width='2' stroke-linecap='round' stroke-dasharray='3 4'><path d='M30 38 C22 26 8 34 30 54 C52 34 38 26 30 38 Z'/><path d='M112 108 C106 98 94 105 112 122 C130 105 118 98 112 108 Z'/></g><g stroke='rgba(255,243,232,.55)' stroke-width='2.4' stroke-linecap='round'><path d='M104 26l8 8M112 26l-8 8'/><path d='M34 112l6 6M40 112l-6 6'/></g></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .75  0 0 0 0 .35  0 0 0 0 .5  0 0 0 .22 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
   }
   .app {
     height: 100dvh; display: grid; grid-template-columns: 1fr 88px;
@@ -73,17 +75,15 @@
   body[data-mode="keypad"] .main { padding-right: 16px; gap: 10px; }
   body[data-mode="keypad"] .input { padding: 6px 16px; }
   body[data-mode="keypad"] input { font-size: 1.9rem; }
-  body[data-mode="keypad"] .results { flex: none; min-height: 0; gap: 22px; padding-bottom: 22px; }
+  body[data-mode="keypad"] .results { flex: none; min-height: 0; gap: 34px; padding: 18px 0 24px; }
+  body[data-mode="keypad"] .face { width: 84px; height: 49px; top: -15px; right: 12px; }
+  body[data-mode="keypad"] .row .wheel { width: 28px; height: 28px; bottom: -16px; }
+  body[data-mode="keypad"] .row .wheel.l { left: 20px; }
+  body[data-mode="keypad"] .row .wheel.r { right: 20px; }
   body[data-mode="keypad"] .row { padding: 8px 14px; border-radius: 28px 28px 22px 22px; }
   body[data-mode="keypad"] .row .name { font-size: .9rem; padding-right: 74px; }
   body[data-mode="keypad"] .row .name .flag { font-size: 1.3rem; }
   body[data-mode="keypad"] .row .amt { font-size: clamp(1.5rem, 7.5vw, 2.1rem); }
-  body[data-mode="keypad"] .row::before { top: 14px; width: 9px; height: 11px; right: 48px; box-shadow: 24px 0 0 var(--cocoa); }
-  body[data-mode="keypad"] .row {
-    background-image:
-      radial-gradient(circle at calc(100% - 64px) 36px, rgba(255, 143, 176, .75) 0 7px, transparent 8px),
-      radial-gradient(circle at calc(100% - 12px) 36px, rgba(255, 143, 176, .75) 0 7px, transparent 8px);
-  }
   body[data-mode="keypad"] .keypad { flex: 1; min-height: 280px; grid-template-rows: repeat(4, 1fr) 1.1fr; }
   body[data-mode="keypad"] .key { height: auto; font-size: 2.2rem; border-radius: 24px; }
   body[data-mode="keypad"] .key.clear { height: auto; font-size: 1.5rem; }
@@ -101,36 +101,42 @@
   .presets small { font-size: .7rem; font-weight: 700; opacity: .75; }
 
   /* Resultados: dos molcars */
-  .results { flex: 1; min-height: 210px; display: grid; grid-template-rows: 1fr 1fr; gap: 26px; padding-bottom: 30px; }
+  .results { flex: 1; min-height: 240px; display: grid; grid-template-rows: 1fr 1fr; gap: 46px; padding: 20px 0 34px; }
   .row { border-radius: 38px 38px 30px 30px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0;
-    box-shadow: 0 6px 0 rgba(74, 43, 47, .18); }
-  .row.usd { background-color: var(--butter); }
-  .row.uyu { background-color: var(--mint); }
-  /* Cachetes */
-  .row {
-    background-image:
-      radial-gradient(circle at calc(100% - 76px) 52px, rgba(255, 143, 176, .75) 0 9px, transparent 10px),
-      radial-gradient(circle at calc(100% - 14px) 52px, rgba(255, 143, 176, .75) 0 9px, transparent 10px);
-  }
-  /* Ojitos */
-  .row::before {
-    content: ""; position: absolute; z-index: 1; top: 24px; right: 56px; width: 12px; height: 15px; border-radius: 50%;
-    background: var(--cocoa); box-shadow: 30px 0 0 var(--cocoa);
-    animation: blink 5s infinite;
-  }
-  /* Ruedas */
-  .wheels { position: absolute; left: 0; right: 0; bottom: -17px; height: 24px; pointer-events: none; }
-  .wheels::before, .wheels::after {
-    content: ""; position: absolute; bottom: 0; width: 34px; height: 24px; border-radius: 14px 14px 12px 12px;
-    background: radial-gradient(circle at 50% 45%, var(--fur) 0 4px, transparent 5px), var(--cocoa);
-  }
-  .wheels::before { left: 26px; }
-  .wheels::after { right: 26px; }
+    box-shadow: 0 6px 0 rgba(74, 43, 47, .18); transform-origin: 50% 100%;
+    animation: arrive .9s steps(9) backwards; }
+  .row.usd { background-color: var(--butter); --body: var(--butter); --patch: #e6a85a; }
+  .row.uyu { background-color: var(--mint); --body: var(--mint); --patch: #f6a9bd; animation-delay: .15s; }
+  .row.hop { animation: hop .5s steps(1) 1; }
 
-  .row .name { padding-right: 84px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; line-height: 1.15; position: relative; z-index: 1; }
+  /* Cara de molcar (SVG inyectado por JS) */
+  .face { position: absolute; z-index: 1; top: -20px; right: 18px; width: 110px; height: 64px; overflow: visible; pointer-events: none;
+    animation: boil 1.2s steps(1) infinite; }
+  .face .eye, .car .eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+  .row.uyu .eye { animation-delay: 1.9s; }
+  .ear { transform-box: fill-box; transform-origin: 50% 90%; animation: ear 7s steps(1) infinite; }
+  .ear.r { animation-delay: .4s; }
+  .row.uyu .ear { animation-delay: 2.2s; }
+  .happy { opacity: 0; }
+  body.dragging .eyes { opacity: 0; }
+  body.dragging .happy { opacity: 1; }
+
+  /* Ruedas con rayos de fieltro: giran al conducir */
+  .wheel { position: absolute; z-index: 2; bottom: -22px; width: 38px; height: 38px; border-radius: 50%; pointer-events: none;
+    background:
+      radial-gradient(circle, var(--fur) 0 5px, transparent 5.5px),
+      conic-gradient(var(--cocoa) 0 25%, #6b474b 0 50%, var(--cocoa) 0 75%, #6b474b 0); }
+  .wheel::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 2px dashed rgba(255, 243, 232, .45); }
+  .row .wheel { animation: spin .9s steps(9) 1 backwards; }
+  .row .wheel.l { left: 28px; }
+  .row .wheel.r { right: 28px; }
+  .row.hop .wheel { animation: spin .5s steps(8) 1; }
+  body.dragging .row .wheel { animation: spin .5s steps(8) infinite; }
+
+  .row .name { padding-right: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; line-height: 1.15; position: relative; z-index: 1; }
   .row .name .flag { font-size: 1.7rem; }
   .row .amt { position: relative; z-index: 1; font-size: clamp(2rem, 11vw, 3.4rem); font-weight: 900; font-variant-numeric: tabular-nums;
-    letter-spacing: 0; overflow-wrap: anywhere; transform-origin: 20% 100%; }
+    letter-spacing: 0; white-space: nowrap; transform-origin: 20% 100%; }
   .wobble { animation: wobble .36s steps(1) 1; }
 
   @keyframes wobble {
@@ -139,7 +145,20 @@
     66% { transform: rotate(-.8deg) translateY(0); }
     100% { transform: none; }
   }
-  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.08); } }
+  /* Stop-motion: cada cuadro se sostiene (steps) */
+  @keyframes boil { 0% { transform: translate(0, 0) rotate(0); } 33% { transform: translate(.7px, -.6px) rotate(.9deg); } 66% { transform: translate(-.6px, .5px) rotate(-.9deg); } }
+  @keyframes ear { 0%, 86%, 100% { transform: none; } 88% { transform: rotate(-9deg); } 91% { transform: rotate(6deg); } 94% { transform: rotate(-4deg); } 97% { transform: rotate(2deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes arrive { from { transform: translateX(115%) rotate(2deg); } to { transform: none; } }
+  @keyframes hop {
+    0% { transform: scale(1.04, .93); }
+    20% { transform: translateY(-9px) scale(.97, 1.06); }
+    45% { transform: translateY(-4px); }
+    70% { transform: scale(1.02, .97); }
+    100% { transform: none; }
+  }
+  @keyframes tilt { 0% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 
   details { background: rgba(255, 243, 232, .55); border-radius: 22px; padding: 10px 16px; }
   summary { cursor: pointer; font-weight: 800; color: var(--berry); padding: 4px 0; }
@@ -156,22 +175,22 @@
     background: var(--fur); box-shadow: inset 0 3px 0 rgba(74, 43, 47, .12); }
   .fill { position: absolute; left: 3px; right: 3px; top: 3px; bottom: 3px; border-radius: 9px; background: var(--berry); clip-path: inset(100% 0 0 0); }
   .track::after { content: ""; position: absolute; top: 8px; bottom: 8px; left: 50%; border-left: 3px dashed rgba(255, 243, 232, .9); transform: translateX(-50%); }
-  .thumb { position: absolute; z-index: 2; left: 50%; bottom: 34px; will-change: transform; width: 66px; height: 48px; margin: 0 0 -24px -33px; border-radius: 26px 26px 18px 18px;
-    background: var(--berry); color: var(--fur); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px;
-    font-weight: 900; font-size: 1.05rem; box-shadow: 0 4px 0 #8f2646; }
-  .thumb::before {
-    content: ""; position: absolute; top: 9px; left: 17px; width: 8px; height: 10px; border-radius: 50%;
-    background: var(--cocoa); box-shadow: 24px 0 0 var(--cocoa); animation: blink 5s 1.5s infinite;
-  }
-  .thumb::after {
-    content: ""; position: absolute; bottom: -7px; left: 8px; width: 16px; height: 12px; border-radius: 6px;
-    background: var(--cocoa); box-shadow: 34px 0 0 var(--cocoa);
-  }
-  .thumb:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 4px; }
+  .thumb { position: absolute; z-index: 2; left: 50%; bottom: 34px; will-change: transform; width: 72px; height: 62px; margin: 0 0 -31px -36px; border-radius: 26px; }
+  .thumb:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 5px; }
+  .car { position: relative; width: 100%; height: 100%; transform-origin: 50% 100%; }
+  .car svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .car .val { position: absolute; left: 50%; bottom: 13px; transform: translateX(-50%); min-width: 36px; text-align: center;
+    background: var(--fur); color: var(--cocoa); font-weight: 900; font-size: .95rem; line-height: 1; padding: 3px 7px; border-radius: 10px;
+    font-variant-numeric: tabular-nums; }
+  .car .wheel { width: 20px; height: 20px; bottom: -7px; animation: none; }
+  .car .wheel::after { inset: 2px; border-width: 1.5px; }
+  .car .wheel.l { left: 8px; }
+  .car .wheel.r { right: 8px; }
+  body.dragging .car { animation: tilt .36s steps(1) infinite; }
+  body.dragging .car .wheel { animation: spin .4s steps(8) infinite; }
 
   @media (prefers-reduced-motion: reduce) {
-    .wobble, .row::before, .thumb::before { animation: none; }
-    .presets button { transition: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
@@ -190,12 +209,12 @@
       <div class="row usd felt">
         <div class="name"><span class="flag">🇺🇸</span>Dólares (USD)</div>
         <div class="amt" id="usd">—</div>
-        <span class="wheels"></span>
+        <i class="wheel l"></i><i class="wheel r"></i>
       </div>
       <div class="row uyu felt">
         <div class="name"><span class="flag">🇺🇾</span>Pesos uruguayos (UYU)</div>
         <div class="amt" id="uyu">—</div>
-        <span class="wheels"></span>
+        <i class="wheel l"></i><i class="wheel r"></i>
       </div>
     </div>
 
@@ -246,19 +265,69 @@
   const CURVE = 2; // escala del slider: valor = MAX * pos^CURVE (más precisión al principio)
 
   const $ = id => document.getElementById(id);
+
+  // ---- Molcars (SVG) ----
+  const INK = "#3a2024", PINK = "#ffb3c6", BLUSH = "#ff8fb0";
+  const eyes = (cx1, cx2, cy, top) => `
+    <g class="eyes">
+      <g class="eye"><ellipse cx="${cx1}" cy="${cy}" rx="5" ry="6.2" fill="${INK}"/><circle cx="${cx1 - 1.6}" cy="${cy - 2.6}" r="1.7" fill="#fff"/></g>
+      <g class="eye"><ellipse cx="${cx2}" cy="${cy}" rx="5" ry="6.2" fill="${INK}"/><circle cx="${cx2 - 1.6}" cy="${cy - 2.6}" r="1.7" fill="#fff"/></g>
+    </g>
+    <g class="happy" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round">
+      <path d="M${cx1 - 6} ${cy + 2} Q${cx1} ${cy - 7} ${cx1 + 6} ${cy + 2}"/><path d="M${cx2 - 6} ${cy + 2} Q${cx2} ${cy - 7} ${cx2 + 6} ${cy + 2}"/>
+    </g>`;
+  const FACE = `<svg class="face" viewBox="0 0 110 64" aria-hidden="true">
+    <g class="ear l"><ellipse cx="27" cy="13" rx="15" ry="11" transform="rotate(-18 27 13)" fill="var(--patch)" stroke="rgba(58,32,36,.3)" stroke-width="1.6" stroke-dasharray="3 3"/>
+      <ellipse cx="27" cy="14" rx="8" ry="5.5" transform="rotate(-18 27 14)" fill="${PINK}"/></g>
+    <g class="ear r"><ellipse cx="83" cy="13" rx="15" ry="11" transform="rotate(18 83 13)" fill="var(--body)" stroke="rgba(58,32,36,.3)" stroke-width="1.6" stroke-dasharray="3 3"/>
+      <ellipse cx="83" cy="14" rx="8" ry="5.5" transform="rotate(18 83 14)" fill="${PINK}"/></g>
+    <ellipse cx="37" cy="35" rx="19" ry="15" fill="var(--patch)"/>
+    <circle cx="24" cy="48" r="7" fill="${BLUSH}" opacity=".7"/><circle cx="86" cy="48" r="7" fill="${BLUSH}" opacity=".7"/>
+    ${eyes(38, 72, 38)}
+    <ellipse cx="55" cy="46" rx="5" ry="3.4" fill="#e0577d"/><circle cx="53.6" cy="44.9" r="1" fill="#fff" opacity=".8"/>
+    <path d="M47 51.5 Q51 57 55 51.5 Q59 57 63 51.5" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  const CAR = `<svg viewBox="0 0 72 62" aria-hidden="true">
+    <ellipse cx="19" cy="12" rx="10" ry="8" transform="rotate(-16 19 12)" fill="var(--berry)"/><ellipse cx="19" cy="13" rx="5.5" ry="3.8" transform="rotate(-16 19 13)" fill="${PINK}"/>
+    <ellipse cx="53" cy="12" rx="10" ry="8" transform="rotate(16 53 12)" fill="var(--berry)"/><ellipse cx="53" cy="13" rx="5.5" ry="3.8" transform="rotate(16 53 13)" fill="${PINK}"/>
+    <rect x="3" y="15" width="66" height="40" rx="20" fill="#8f2646"/>
+    <rect x="3" y="11" width="66" height="40" rx="20" fill="var(--berry)"/>
+    <rect x="7.5" y="15.5" width="57" height="31" rx="15.5" fill="none" stroke="rgba(255,243,232,.5)" stroke-width="1.6" stroke-dasharray="3 3"/>
+    <circle cx="16" cy="32" r="5" fill="${BLUSH}" opacity=".75"/><circle cx="56" cy="32" r="5" fill="${BLUSH}" opacity=".75"/>
+    ${eyes(26, 46, 25)}
+    <ellipse cx="36" cy="30" rx="3.4" ry="2.4" fill="${PINK}"/>
+  </svg>`;
+
+  document.querySelectorAll(".row").forEach(r => r.insertAdjacentHTML("afterbegin", FACE));
+  $("thumb").innerHTML = `<div class="car">${CAR}<span class="val" id="val">0</span><i class="wheel l"></i><i class="wheel r"></i></div>`;
+  // Los molcars llegan en stop-motion; después reaccionan a cada cambio
+  setTimeout(() => document.body.classList.add("live"), 1600);
   const fmt = (n, d = 2) => n.toLocaleString("es-UY", { minimumFractionDigits: d, maximumFractionDigits: d });
   const rate = k => manual[k] ?? auto[k];
 
   try { Object.assign(manual, JSON.parse(localStorage.getItem(KEY)) || {}); } catch {}
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(manual)); } catch {} };
 
+  // Achica la tipografía hasta que el monto entre en la tarjeta
+  function fitAmt(el) {
+    el.style.fontSize = "";
+    let px = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth && px > 16) el.style.fontSize = (px -= 2) + "px";
+  }
+
   // Temblor de stop-motion cuando cambia el número
   function setAmt(id, text) {
     const el = $(id);
     if (el.textContent === text) return;
+    const grew = text.length !== el.textContent.length;
     el.textContent = text;
+    if (grew) fitAmt(el);
     if (dragging) return;
     el.classList.remove("wobble"); void el.offsetWidth; el.classList.add("wobble");
+    if (document.body.classList.contains("live")) {
+      const row = el.closest(".row");
+      row.classList.remove("hop"); void row.offsetWidth; row.classList.add("hop");
+    }
   }
 
   function render() {
@@ -316,6 +385,7 @@
   // ---- Slider vertical (0 abajo, 1000 arriba) ----
   const slider = $("slider"), track = $("track"), thumb = $("thumb");
 
+  const valEl = $("val");
   let trackH = 0;
   const measure = () => { trackH = track.clientHeight; renderThumb(parseFloat($("pen").value) || 0); };
   new ResizeObserver(measure).observe(track);
@@ -326,7 +396,7 @@
     thumb.style.transform = `translate3d(0, ${-f * trackH}px, 0)`;
     $("fill").style.clipPath = `inset(${(1 - f) * 100}% 0 0 0)`;
     const t = String(Math.round(pen));
-    if (thumb.textContent !== t) thumb.textContent = t;
+    if (valEl.textContent !== t) valEl.textContent = t;
     thumb.setAttribute("aria-valuenow", Math.round(v));
   }
 
@@ -344,10 +414,10 @@
   }
 
   slider.addEventListener("pointerdown", e => {
-    dragging = true; slider.setPointerCapture(e.pointerId); fromPointer(e); e.preventDefault();
+    dragging = true; document.body.classList.add("dragging"); slider.setPointerCapture(e.pointerId); fromPointer(e); e.preventDefault();
   });
   slider.addEventListener("pointermove", e => { if (dragging) fromPointer(e); }, { passive: true });
-  const stop = () => { dragging = false; };
+  const stop = () => { dragging = false; document.body.classList.remove("dragging"); };
   slider.addEventListener("pointerup", stop);
   slider.addEventListener("pointercancel", stop);
 
@@ -385,7 +455,8 @@
     $("pen").inputMode = keypad ? "none" : "decimal";
     try { localStorage.setItem(MODE_KEY, m); } catch {}
   }
-  $("modeBtn").onclick = () => setMode(document.body.dataset.mode === "keypad" ? "slider" : "keypad");
+  addEventListener("resize", () => { fitAmt($("usd")); fitAmt($("uyu")); });
+  $("modeBtn").onclick = () => { setMode(document.body.dataset.mode === "keypad" ? "slider" : "keypad"); requestAnimationFrame(() => { fitAmt($("usd")); fitAmt($("uyu")); }); };
 
   $("keypad").addEventListener("click", e => {
     const k = e.target.closest(".key")?.dataset.k;
