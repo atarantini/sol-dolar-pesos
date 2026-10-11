@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7b6c8">
+<title>Sol → USD / UYU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --felt: #f7b6c8;       /* fieltro rosa */
+    --felt-deep: #f08fae;
+    --fur: #fff3e8;        /* crema pelaje */
+    --berry: #c8365f;      /* frutilla (contraste AA con crema) */
+    --butter: #ffd98a;     /* USD */
+    --mint: #a9dcc9;       /* UYU */
+    --cocoa: #3a2024;      /* ojos y ruedas */
+    --cheek: #ff8fb0;
+    --font: "Nunito", ui-rounded, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--felt); color: var(--cocoa); overflow: hidden; font-family: var(--font);
+  }
+  /* Textura de fieltro (fondo estático, sin blend) */
+  body {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .75  0 0 0 0 .35  0 0 0 0 .5  0 0 0 .22 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  }
+  .app {
+    height: 100dvh; display: grid; grid-template-columns: 1fr 88px;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* Columna principal */
+  .main { display: flex; flex-direction: column; gap: 14px; padding: 18px 6px 14px 16px; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+  .flag { font-size: 2rem; line-height: 1; }
+
+  /* Pieza de fieltro con puntadas */
+  .felt { position: relative; }
+  .felt::after {
+    content: ""; position: absolute; inset: 6px; border-radius: inherit; pointer-events: none;
+    border: 2px dashed rgba(74, 43, 47, .28);
+  }
+
+  .input { display: flex; align-items: center; gap: 10px; background: var(--fur); border-radius: 26px; padding: 12px 20px;
+    box-shadow: 0 5px 0 var(--felt-deep); }
+  .input:focus-within { box-shadow: 0 5px 0 var(--berry); }
+  .input .cur { font-weight: 800; color: var(--berry); font-size: 1.5rem; }
+  input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--cocoa);
+    font: inherit; font-size: 2.6rem; font-weight: 900; outline: none; position: relative; z-index: 1; }
+  input::placeholder { color: rgba(74, 43, 47, .25); }
+
+  .inputrow { display: flex; align-items: center; gap: 10px; }
+  .inputrow .input { flex: 1; min-width: 0; }
+  .mode { border: 0; background: var(--fur); border-radius: 18px; width: 52px; height: 52px; flex: none; font-size: 1.5rem; line-height: 1; cursor: pointer;
+    box-shadow: 0 4px 0 var(--felt-deep); }
+  .mode:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--felt-deep); }
+  .mode:focus-visible, .key:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 3px; }
+
+  .keypad { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .key { border: 0; background: var(--fur); color: var(--cocoa); border-radius: 20px; height: 54px; cursor: pointer;
+    font: inherit; font-size: 1.6rem; font-weight: 900; box-shadow: 0 5px 0 var(--felt-deep); touch-action: manipulation; }
+  .key:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--felt-deep); }
+  .key.clear { grid-column: 1 / -1; background: var(--butter); font-size: 1.2rem; height: 50px; box-shadow: 0 5px 0 #d9a94f; }
+  .key.clear:active { box-shadow: 0 1px 0 #d9a94f; }
+
+  body[data-mode="keypad"] .presets, body[data-mode="keypad"] .slider { display: none; }
+  body[data-mode="keypad"] .keypad { display: grid; }
+  body[data-mode="keypad"] .app { grid-template-columns: 1fr; }
+  body[data-mode="keypad"] .main { padding-right: 16px; gap: 10px; }
+  body[data-mode="keypad"] .input { padding: 6px 16px; }
+  body[data-mode="keypad"] input { font-size: 1.9rem; }
+  body[data-mode="keypad"] .results { flex: none; min-height: 0; gap: 22px; padding-bottom: 22px; }
+  body[data-mode="keypad"] .row { padding: 8px 14px; border-radius: 28px 28px 22px 22px; }
+  body[data-mode="keypad"] .row .name { font-size: .9rem; padding-right: 74px; }
+  body[data-mode="keypad"] .row .name .flag { font-size: 1.3rem; }
+  body[data-mode="keypad"] .row .amt { font-size: clamp(1.5rem, 7.5vw, 2.1rem); }
+  body[data-mode="keypad"] .row::before { top: 14px; width: 9px; height: 11px; right: 48px; box-shadow: 24px 0 0 var(--cocoa); }
+  body[data-mode="keypad"] .row {
+    background-image:
+      radial-gradient(circle at calc(100% - 64px) 36px, rgba(255, 143, 176, .75) 0 7px, transparent 8px),
+      radial-gradient(circle at calc(100% - 12px) 36px, rgba(255, 143, 176, .75) 0 7px, transparent 8px);
+  }
+  body[data-mode="keypad"] .keypad { flex: 1; min-height: 280px; grid-template-rows: repeat(4, 1fr) 1.1fr; }
+  body[data-mode="keypad"] .key { height: auto; font-size: 2.2rem; border-radius: 24px; }
+  body[data-mode="keypad"] .key.clear { height: auto; font-size: 1.5rem; }
+  body[data-mode="keypad"] details, body[data-mode="keypad"] footer { font-size: .8rem; }
+  body[data-mode="keypad"] summary { font-size: .85rem; }
+
+  .presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .presets button { border: 0; background: rgba(255, 243, 232, .5); color: var(--cocoa);
+    border-radius: 14px; padding: 5px 2px; cursor: pointer; font: inherit; line-height: 1.15;
+    transition: background .1s; }
+  .presets button::after { display: none; }
+  .presets button:active { background: var(--fur); }
+  .presets button:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 2px; }
+  .presets b { display: block; font-size: .95rem; font-weight: 800; }
+  .presets small { font-size: .7rem; font-weight: 700; opacity: .75; }
+
+  /* Resultados: dos molcars */
+  .results { flex: 1; min-height: 210px; display: grid; grid-template-rows: 1fr 1fr; gap: 26px; padding-bottom: 30px; }
+  .row { border-radius: 38px 38px 30px 30px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0;
+    box-shadow: 0 6px 0 rgba(74, 43, 47, .18); }
+  .row.usd { background-color: var(--butter); }
+  .row.uyu { background-color: var(--mint); }
+  /* Cachetes */
+  .row {
+    background-image:
+      radial-gradient(circle at calc(100% - 76px) 52px, rgba(255, 143, 176, .75) 0 9px, transparent 10px),
+      radial-gradient(circle at calc(100% - 14px) 52px, rgba(255, 143, 176, .75) 0 9px, transparent 10px);
+  }
+  /* Ojitos */
+  .row::before {
+    content: ""; position: absolute; z-index: 1; top: 24px; right: 56px; width: 12px; height: 15px; border-radius: 50%;
+    background: var(--cocoa); box-shadow: 30px 0 0 var(--cocoa);
+    animation: blink 5s infinite;
+  }
+  /* Ruedas */
+  .wheels { position: absolute; left: 0; right: 0; bottom: -17px; height: 24px; pointer-events: none; }
+  .wheels::before, .wheels::after {
+    content: ""; position: absolute; bottom: 0; width: 34px; height: 24px; border-radius: 14px 14px 12px 12px;
+    background: radial-gradient(circle at 50% 45%, var(--fur) 0 4px, transparent 5px), var(--cocoa);
+  }
+  .wheels::before { left: 26px; }
+  .wheels::after { right: 26px; }
+
+  .row .name { padding-right: 84px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; line-height: 1.15; position: relative; z-index: 1; }
+  .row .name .flag { font-size: 1.7rem; }
+  .row .amt { position: relative; z-index: 1; font-size: clamp(2rem, 11vw, 3.4rem); font-weight: 900; font-variant-numeric: tabular-nums;
+    letter-spacing: 0; overflow-wrap: anywhere; transform-origin: 20% 100%; }
+  .wobble { animation: wobble .36s steps(1) 1; }
+
+  @keyframes wobble {
+    0% { transform: rotate(-2deg) translateY(1px); }
+    33% { transform: rotate(1.6deg) translateY(-2px) scale(1.02); }
+    66% { transform: rotate(-.8deg) translateY(0); }
+    100% { transform: none; }
+  }
+  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+
+  details { background: rgba(255, 243, 232, .55); border-radius: 22px; padding: 10px 16px; }
+  summary { cursor: pointer; font-weight: 800; color: var(--berry); padding: 4px 0; }
+  .cfg { display: grid; gap: 10px; margin-top: 10px; padding-bottom: 6px; }
+  .cfg label { display: grid; gap: 4px; font-size: .9rem; font-weight: 700; }
+  .cfg input { font-size: 1.1rem; font-weight: 800; background: var(--fur); border: 2px solid transparent; border-radius: 14px; padding: 8px 12px; width: 100%; }
+  .cfg input:focus { border-color: var(--berry); }
+  .cfg button { justify-self: start; border: 0; background: none; color: var(--berry); cursor: pointer; font: inherit; font-size: .9rem; text-decoration: underline; padding: 0; }
+  footer { font-size: .82rem; font-weight: 600; color: var(--cocoa); padding-bottom: 4px; }
+
+  /* Slider vertical: ruta de puntadas + molcar */
+  .slider { position: relative; padding: 24px 0; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .track { position: absolute; top: 34px; bottom: 34px; left: 50%; width: 22px; margin-left: -11px; border-radius: 11px;
+    background: var(--fur); box-shadow: inset 0 3px 0 rgba(74, 43, 47, .12); }
+  .fill { position: absolute; left: 3px; right: 3px; top: 3px; bottom: 3px; border-radius: 9px; background: var(--berry); clip-path: inset(100% 0 0 0); }
+  .track::after { content: ""; position: absolute; top: 8px; bottom: 8px; left: 50%; border-left: 3px dashed rgba(255, 243, 232, .9); transform: translateX(-50%); }
+  .thumb { position: absolute; z-index: 2; left: 50%; bottom: 34px; will-change: transform; width: 66px; height: 48px; margin: 0 0 -24px -33px; border-radius: 26px 26px 18px 18px;
+    background: var(--berry); color: var(--fur); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px;
+    font-weight: 900; font-size: 1.05rem; box-shadow: 0 4px 0 #8f2646; }
+  .thumb::before {
+    content: ""; position: absolute; top: 9px; left: 17px; width: 8px; height: 10px; border-radius: 50%;
+    background: var(--cocoa); box-shadow: 24px 0 0 var(--cocoa); animation: blink 5s 1.5s infinite;
+  }
+  .thumb::after {
+    content: ""; position: absolute; bottom: -7px; left: 8px; width: 16px; height: 12px; border-radius: 6px;
+    background: var(--cocoa); box-shadow: 34px 0 0 var(--cocoa);
+  }
+  .thumb:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wobble, .row::before, .thumb::before { animation: none; }
+    .presets button { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="main">
+    <div class="inputrow">
+      <label class="input felt">
+        <span class="flag">🇵🇪</span><span class="cur">S/</span>
+        <input id="pen" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+      </label>
+      <button class="mode" id="modeBtn" type="button" aria-label="Cambiar a calculadora">🧮</button>
+    </div>
+
+    <div class="results">
+      <div class="row usd felt">
+        <div class="name"><span class="flag">🇺🇸</span>Dólares (USD)</div>
+        <div class="amt" id="usd">—</div>
+        <span class="wheels"></span>
+      </div>
+      <div class="row uyu felt">
+        <div class="name"><span class="flag">🇺🇾</span>Pesos uruguayos (UYU)</div>
+        <div class="amt" id="uyu">—</div>
+        <span class="wheels"></span>
+      </div>
+    </div>
+
+    <div class="presets" id="presets"></div>
+
+    <div class="keypad" id="keypad">
+      <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+      <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+      <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+      <button class="key" data-k=".">.</button><button class="key" data-k="0">0</button><button class="key" data-k="back" aria-label="Borrar un dígito">⌫</button>
+      <button class="key clear" data-k="clear">Clear</button>
+    </div>
+
+    <details id="config">
+      <summary>⚙️ Config</summary>
+      <div class="cfg">
+        <label>🇺🇸 USD → 🇵🇪 PEN (soles por 1 USD)
+          <input id="cfgPen" type="number" inputmode="decimal" min="0" step="any">
+        </label>
+        <label>🇺🇸 USD → 🇺🇾 UYU (pesos por 1 USD)
+          <input id="cfgUyu" type="number" inputmode="decimal" min="0" step="any">
+        </label>
+        <button id="cfgReset" type="button">Volver a cotización automática</button>
+      </div>
+    </details>
+
+    <footer id="info">Cargando cotización…</footer>
+  </div>
+
+  <div class="slider" id="slider">
+    <div class="track" id="track">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="thumb" id="thumb" role="slider" tabindex="0" aria-label="Soles"
+         aria-orientation="vertical" aria-valuemin="0" aria-valuemax="1000"></div>
+  </div>
+</div>
+
+<script>
+  // Cotizaciones automáticas (1 USD = x). Valores de respaldo si no hay red.
+  const auto = { pen: 3.5, uyu: 40, src: "aprox." };
+  // Cotizaciones manuales (null = usar automática), guardadas en el navegador.
+  const manual = { pen: null, uyu: null };
+  const TARGETS = [5, 10, 15, 50];
+  const MAX = 1000;
+  const KEY = "sol-dolar-pesos";
+  const PEN_KEY = "sol-dolar-pesos:ultimo-monto";
+  const CURVE = 2; // escala del slider: valor = MAX * pos^CURVE (más precisión al principio)
+
+  const $ = id => document.getElementById(id);
+  const fmt = (n, d = 2) => n.toLocaleString("es-UY", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const rate = k => manual[k] ?? auto[k];
+
+  try { Object.assign(manual, JSON.parse(localStorage.getItem(KEY)) || {}); } catch {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(manual)); } catch {} };
+
+  // Temblor de stop-motion cuando cambia el número
+  function setAmt(id, text) {
+    const el = $(id);
+    if (el.textContent === text) return;
+    el.textContent = text;
+    if (dragging) return;
+    el.classList.remove("wobble"); void el.offsetWidth; el.classList.add("wobble");
+  }
+
+  function render() {
+    const pen = parseFloat($("pen").value);
+    if (isNaN(pen)) { setAmt("usd", "—"); setAmt("uyu", "—"); }
+    else {
+      const usd = pen / rate("pen");
+      setAmt("usd", "US$ " + fmt(usd));
+      setAmt("uyu", "$U " + fmt(usd * rate("uyu")));
+    }
+    renderThumb(isNaN(pen) ? 0 : pen);
+    try { localStorage.setItem(PEN_KEY, $("pen").value); } catch {}
+  }
+
+  function setPen(v) { $("pen").value = v; render(); }
+
+  function renderPresets() {
+    $("presets").innerHTML = "";
+    for (const usd of TARGETS) {
+      const pen = Math.round(usd * rate("pen"));
+      const b = document.createElement("button");
+      b.className = "felt";
+      b.innerHTML = `<b>S/ ${pen}</b><small>≈ US$ ${usd}</small>`;
+      b.onclick = () => setPen(pen);
+      $("presets").appendChild(b);
+    }
+  }
+
+  function renderInfo() {
+    const tag = k => manual[k] != null ? "manual" : auto.src;
+    $("info").textContent =
+      `1 USD = ${fmt(rate("pen"))} PEN (${tag("pen")}) · ${fmt(rate("uyu"))} UYU (${tag("uyu")})`;
+    $("cfgPen").placeholder = "auto: " + fmt(auto.pen);
+    $("cfgUyu").placeholder = "auto: " + fmt(auto.uyu);
+  }
+
+  const refresh = () => { renderInfo(); renderPresets(); render(); };
+
+  function onCfg(k, el) {
+    const v = parseFloat(el.value);
+    manual[k] = v > 0 ? v : null;
+    save(); refresh();
+  }
+
+  $("cfgPen").value = manual.pen ?? "";
+  $("cfgUyu").value = manual.uyu ?? "";
+  $("cfgPen").addEventListener("input", e => onCfg("pen", e.target));
+  $("cfgUyu").addEventListener("input", e => onCfg("uyu", e.target));
+  $("cfgReset").onclick = () => {
+    manual.pen = manual.uyu = null;
+    $("cfgPen").value = $("cfgUyu").value = "";
+    save(); refresh();
+  };
+
+  // ---- Slider vertical (0 abajo, 1000 arriba) ----
+  const slider = $("slider"), track = $("track"), thumb = $("thumb");
+
+  let trackH = 0;
+  const measure = () => { trackH = track.clientHeight; renderThumb(parseFloat($("pen").value) || 0); };
+  new ResizeObserver(measure).observe(track);
+
+  function renderThumb(pen) {
+    const v = Math.min(MAX, Math.max(0, pen));
+    const f = Math.pow(v / MAX, 1 / CURVE);
+    thumb.style.transform = `translate3d(0, ${-f * trackH}px, 0)`;
+    $("fill").style.clipPath = `inset(${(1 - f) * 100}% 0 0 0)`;
+    const t = String(Math.round(pen));
+    if (thumb.textContent !== t) thumb.textContent = t;
+    thumb.setAttribute("aria-valuenow", Math.round(v));
+  }
+
+  // Arrastre: un solo render por frame, sin temblor mientras se mueve
+  let pending = null, raf = 0, dragging = false;
+  function fromPointer(e) {
+    const r = track.getBoundingClientRect();
+    const f = 1 - (e.clientY - r.top) / r.height;
+    pending = Math.round(Math.pow(Math.min(1, Math.max(0, f)), CURVE) * MAX);
+    if (!raf) raf = requestAnimationFrame(() => {
+      raf = 0;
+      if (pending == null) return;
+      $("pen").value = pending; render(); pending = null;
+    });
+  }
+
+  slider.addEventListener("pointerdown", e => {
+    dragging = true; slider.setPointerCapture(e.pointerId); fromPointer(e); e.preventDefault();
+  });
+  slider.addEventListener("pointermove", e => { if (dragging) fromPointer(e); }, { passive: true });
+  const stop = () => { dragging = false; };
+  slider.addEventListener("pointerup", stop);
+  slider.addEventListener("pointercancel", stop);
+
+  thumb.addEventListener("keydown", e => {
+    const cur = parseFloat($("pen").value) || 0;
+    const step = e.shiftKey ? 50 : 1;
+    const map = { ArrowUp: cur + step, ArrowRight: cur + step, ArrowDown: cur - step, ArrowLeft: cur - step, Home: 0, End: MAX, PageUp: cur + 50, PageDown: cur - 50 };
+    if (!(e.key in map)) return;
+    e.preventDefault();
+    setPen(Math.min(MAX, Math.max(0, map[e.key])));
+  });
+
+  async function loadRates() {
+    try {
+      const r = await fetch("https://open.er-api.com/v6/latest/USD");
+      const d = await r.json();
+      if (d.result !== "success") throw 0;
+      auto.pen = d.rates.PEN; auto.uyu = d.rates.UYU;
+      auto.src = "auto " + new Date(d.time_last_update_utc).toLocaleDateString("es-UY");
+    } catch {}
+    refresh();
+  }
+
+  $("pen").addEventListener("input", render);
+
+  // ---- Modo: slider + presets  <->  teclado numérico ----
+  const MODE_KEY = "sol-dolar-pesos:modo";
+  function setMode(m) {
+    document.body.dataset.mode = m;
+    const keypad = m === "keypad";
+    $("modeBtn").textContent = keypad ? "🎚️" : "🧮";
+    $("modeBtn").setAttribute("aria-label", keypad ? "Cambiar a slider" : "Cambiar a calculadora");
+    // En modo teclado no se abre el teclado del celular
+    $("pen").readOnly = keypad;
+    $("pen").inputMode = keypad ? "none" : "decimal";
+    try { localStorage.setItem(MODE_KEY, m); } catch {}
+  }
+  $("modeBtn").onclick = () => setMode(document.body.dataset.mode === "keypad" ? "slider" : "keypad");
+
+  $("keypad").addEventListener("click", e => {
+    const k = e.target.closest(".key")?.dataset.k;
+    if (k == null) return;
+    let v = $("pen").value;
+    if (k === "clear") v = "";
+    else if (k === "back") v = v.slice(0, -1);
+    else if (k === ".") { if (!v.includes(".")) v = (v || "0") + "."; }
+    else if (v.replace(".", "").length < 8) v = v === "0" ? k : v + k;
+    $("pen").value = v;
+    render();
+  });
+  try { $("pen").value = localStorage.getItem(PEN_KEY) ?? ""; } catch {}
+  let savedMode = "slider";
+  try { savedMode = localStorage.getItem(MODE_KEY) || "slider"; } catch {}
+  setMode(savedMode);
+  refresh();
+  loadRates();
+</script>
+</body>
+</html>
