@@ -103,15 +103,15 @@
   /* Resultados: dos molcars */
   .results { flex: 1; min-height: 240px; display: grid; grid-template-rows: 1fr 1fr; gap: 46px; padding: 20px 0 34px; }
   .row { border-radius: 38px 38px 30px 30px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0;
-    box-shadow: 0 6px 0 rgba(74, 43, 47, .18); transform-origin: 50% 100%;
-    animation: arrive .9s steps(9) backwards; }
+    box-shadow: 0 6px 0 rgba(74, 43, 47, .18); }
   .row.usd { background-color: var(--butter); --body: var(--butter); --patch: #e6a85a; }
-  .row.uyu { background-color: var(--mint); --body: var(--mint); --patch: #f6a9bd; animation-delay: .15s; }
-  .row.hop { animation: hop .5s steps(1) 1; }
+  .row.uyu { background-color: var(--mint); --body: var(--mint); --patch: #f6a9bd;}
+  /* Solo el personaje reacciona: salta la carita, giran las ruedas */
+  .row.hop .face { animation: hop .5s steps(1) 1; }
 
   /* Cara de molcar (SVG inyectado por JS) */
   .face { position: absolute; z-index: 1; top: -20px; right: 18px; width: 110px; height: 64px; overflow: visible; pointer-events: none;
-    animation: boil 1.2s steps(1) infinite; }
+    animation: arrive .5s steps(5) .3s backwards, boil 1.2s steps(1) .8s infinite; }
   .face .eye, .car .eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
   .row.uyu .eye { animation-delay: 1.9s; }
   .ear { transform-box: fill-box; transform-origin: 50% 90%; animation: ear 7s steps(1) infinite; }
@@ -127,7 +127,7 @@
       radial-gradient(circle, var(--fur) 0 5px, transparent 5.5px),
       conic-gradient(var(--cocoa) 0 25%, #6b474b 0 50%, var(--cocoa) 0 75%, #6b474b 0); }
   .wheel::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 2px dashed rgba(255, 243, 232, .45); }
-  .row .wheel { animation: spin .9s steps(9) 1 backwards; }
+  .row .wheel { animation: spin .6s steps(8) 1; }
   .row .wheel.l { left: 28px; }
   .row .wheel.r { right: 28px; }
   .row.hop .wheel { animation: spin .5s steps(8) 1; }
@@ -137,25 +137,18 @@
   .row .name .flag { font-size: 1.7rem; }
   .row .amt { position: relative; z-index: 1; font-size: clamp(2rem, 11vw, 3.4rem); font-weight: 900; font-variant-numeric: tabular-nums;
     letter-spacing: 0; white-space: nowrap; transform-origin: 20% 100%; }
-  .wobble { animation: wobble .36s steps(1) 1; }
 
-  @keyframes wobble {
-    0% { transform: rotate(-2deg) translateY(1px); }
-    33% { transform: rotate(1.6deg) translateY(-2px) scale(1.02); }
-    66% { transform: rotate(-.8deg) translateY(0); }
-    100% { transform: none; }
-  }
   @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.08); } }
   /* Stop-motion: cada cuadro se sostiene (steps) */
   @keyframes boil { 0% { transform: translate(0, 0) rotate(0); } 33% { transform: translate(.7px, -.6px) rotate(.9deg); } 66% { transform: translate(-.6px, .5px) rotate(-.9deg); } }
   @keyframes ear { 0%, 86%, 100% { transform: none; } 88% { transform: rotate(-9deg); } 91% { transform: rotate(6deg); } 94% { transform: rotate(-4deg); } 97% { transform: rotate(2deg); } }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes arrive { from { transform: translateX(115%) rotate(2deg); } to { transform: none; } }
+  @keyframes arrive { from { transform: translateY(24px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes hop {
-    0% { transform: scale(1.04, .93); }
-    20% { transform: translateY(-9px) scale(.97, 1.06); }
+    0% { transform: translateY(2px) scale(1.06, .9); }
+    20% { transform: translateY(-9px) scale(.96, 1.08); }
     45% { transform: translateY(-4px); }
-    70% { transform: scale(1.02, .97); }
+    70% { transform: translateY(0) scale(1.03, .97); }
     100% { transform: none; }
   }
   @keyframes tilt { 0% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
@@ -315,7 +308,7 @@
     while (el.scrollWidth > el.clientWidth && px > 16) el.style.fontSize = (px -= 2) + "px";
   }
 
-  // Temblor de stop-motion cuando cambia el número
+  // Los montos no se animan: solo cambia el texto
   function setAmt(id, text) {
     const el = $(id);
     if (el.textContent === text) return;
@@ -323,7 +316,6 @@
     el.textContent = text;
     if (grew) fitAmt(el);
     if (dragging) return;
-    el.classList.remove("wobble"); void el.offsetWidth; el.classList.add("wobble");
     if (document.body.classList.contains("live")) {
       const row = el.closest(".row");
       row.classList.remove("hop"); void row.offsetWidth; row.classList.add("hop");
