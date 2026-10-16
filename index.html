@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f7b6c8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Sol → USD / UYU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -422,6 +427,7 @@
     setPen(Math.min(MAX, Math.max(0, map[e.key])));
   });
 
+  const RATES_KEY = "sol-dolar-pesos:tasas";
   async function loadRates() {
     try {
       const r = await fetch("https://open.er-api.com/v6/latest/USD");
@@ -429,7 +435,11 @@
       if (d.result !== "success") throw 0;
       auto.pen = d.rates.PEN; auto.uyu = d.rates.UYU;
       auto.src = "auto " + new Date(d.time_last_update_utc).toLocaleDateString("es-UY");
-    } catch {}
+      try { localStorage.setItem(RATES_KEY, JSON.stringify(auto)); } catch {}
+    } catch {
+      // Sin conexión: usar la última cotización guardada
+      try { Object.assign(auto, JSON.parse(localStorage.getItem(RATES_KEY) || "{}")); } catch {}
+    }
     refresh();
   }
 
@@ -467,6 +477,7 @@
   setMode(savedMode);
   refresh();
   loadRates();
+  if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
 </html>

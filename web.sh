@@ -4,4 +4,4 @@
 cd "$(dirname "$0")" || exit 1
 PORT="${1:-8899}"
 echo "Sirviendo en http://0.0.0.0:${PORT}"
-exec php -S "0.0.0.0:${PORT}" -t .
+exec php -S "0.0.0.0:${PORT}" -t . router.php
