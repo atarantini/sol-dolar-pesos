@@ -28,7 +28,7 @@ Es una PWA: después de abrirla una vez con internet, un service worker guarda l
 
 ## Desarrollo
 
-No tiene dependencias ni paso de build: es un único `index.html` más `sw.js`, `manifest.webmanifest` e `icon.svg`.
+No tiene dependencias ni paso de build: es un único `index.html` más `sw.js`, `manifest.webmanifest` e `icons/`.
 
 ```bash
 ./web.sh        # http://localhost:8899 (necesita PHP)

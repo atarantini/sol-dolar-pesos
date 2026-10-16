@@ -2,9 +2,9 @@
 // - App shell (index.html, manifest, icono): cache-first con actualización en segundo plano.
 // - Fuentes de Google: se guardan al primera vez que se ven.
 // - API de cotizaciones: la maneja la página (localStorage); acá no se cachea.
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "sol-dolar-pesos-" + VERSION;
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-192.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
