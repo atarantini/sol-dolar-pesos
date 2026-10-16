@@ -1,0 +1,14 @@
+# Credenciales y secretos
+.git-credentials
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Editor / sistema
+.DS_Store
+*.swp
+.vscode/
+.idea/
