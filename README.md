@@ -10,10 +10,10 @@ Calculadora para convertir **soles peruanos (PEN)** a **dólares (USD)** y **pes
 
 ## Cómo se usa
 
-1. **Ingresá un monto en soles.** Arrastrá el auto del slider vertical (0 abajo, 1000 arriba) o escribilo en el campo de arriba.
+1. **Ingresá un monto en soles.** Por defecto se usa el teclado numérico. También podés arrastrar el auto del slider vertical (0 abajo, 1000 arriba).
 2. **Mirá el resultado.** Las dos tarjetas muestran al instante el equivalente en dólares y en pesos uruguayos.
-3. **Atajos.** Los botones de abajo ponen el monto en soles que equivale a US$ 5, 10, 15 o 50 con la cotización actual.
-4. **Teclado numérico.** El botón 🧮 cambia entre el slider y un teclado numérico. La app recuerda el modo elegido.
+3. **Atajos (modo slider).** Los botones de abajo ponen el monto en soles que equivale a US$ 5, 10, 15 o 50 con la cotización actual.
+4. **Teclado o slider.** El botón de arriba a la derecha cambia entre el teclado numérico (🧮, el modo por defecto) y el slider (🎚️). La app recuerda el modo elegido.
 5. **Cotización manual.** En ⚙️ Config podés fijar tus propias tasas (PEN y UYU por 1 USD). "Volver a cotización automática" las borra.
 
 ## Cotizaciones

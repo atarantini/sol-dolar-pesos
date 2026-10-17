@@ -472,8 +472,8 @@
     render();
   });
   try { $("pen").value = localStorage.getItem(PEN_KEY) ?? ""; } catch {}
-  let savedMode = "slider";
-  try { savedMode = localStorage.getItem(MODE_KEY) || "slider"; } catch {}
+  let savedMode = "keypad";
+  try { savedMode = localStorage.getItem(MODE_KEY) || "keypad"; } catch {}
   setMode(savedMode);
   refresh();
   loadRates();
